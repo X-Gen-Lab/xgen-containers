@@ -16,6 +16,27 @@ static size_t bucket_index(const xgct_hash_t *table, uint32_t key)
     return (size_t) key & (table->bucket_count - 1U);
 }
 
+bool xgct_hash_validate(const xgct_hash_t* table) {
+    if (table == NULL || table->buckets == NULL || table->bucket_count == 0U ||
+        (table->bucket_count & (table->bucket_count - 1U)) != 0U ||
+        table->capacity == 0U || table->count > table->capacity) {
+        return false;
+    }
+    size_t count = 0U;
+    for (size_t i = 0U; i < table->bucket_count; ++i) {
+        const xgct_hash_node_t* node = table->buckets[i];
+        while (node != NULL) {
+            if (count >= table->count || node->owner != table ||
+                bucket_index(table, node->key) != i) {
+                return false;
+            }
+            ++count;
+            node = node->next;
+        }
+    }
+    return count == table->count;
+}
+
 xgs_status_t xgct_hash_init(xgct_hash_t *table, xgct_hash_node_t **buckets,
                            size_t bucket_count, size_t capacity)
 {

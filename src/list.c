@@ -8,6 +8,30 @@
 
 #include <stddef.h>
 
+void xgct_list_clear(xgct_list_t* list) {
+    while (xgct_list_remove_head(list) != NULL) {
+        /* Removal clears both links without changing the containing object. */
+    }
+}
+
+bool xgct_list_validate(const xgct_list_t* list) {
+    if (list == NULL) {
+        return false;
+    }
+    const xgct_list_node_t* previous = NULL;
+    const xgct_list_node_t* node = list->head;
+    size_t count = 0U;
+    while (node != NULL) {
+        if (count >= list->count || node->prev != previous) {
+            return false;
+        }
+        previous = node;
+        node = node->next;
+        ++count;
+    }
+    return count == list->count && previous == list->tail;
+}
+
 /*---------------------------------------------------------------------------*/
 /* List Initialization                                                       */
 /*---------------------------------------------------------------------------*/
