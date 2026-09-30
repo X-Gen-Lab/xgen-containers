@@ -1,0 +1,13 @@
+# Validate supplied targets through the same source and installed-package path.
+function(xgct_check_target target expected_type expected_version result)
+    get_target_property(version "${target}" XGCT_VERSION)
+    get_target_property(abi "${target}" XGCT_ABI_VERSION)
+    get_target_property(type "${target}" TYPE)
+    if(NOT version VERSION_EQUAL "${expected_version}" OR NOT abi STREQUAL "1")
+        set(${result} "${target} has incompatible version/ABI '${version}/${abi}'" PARENT_SCOPE)
+    elseif(NOT type STREQUAL "${expected_type}")
+        set(${result} "${target} has incompatible target type '${type}'; expected ${expected_type}" PARENT_SCOPE)
+    else()
+        set(${result} "" PARENT_SCOPE)
+    endif()
+endfunction()

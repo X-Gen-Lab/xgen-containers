@@ -1,0 +1,6 @@
+include(GoogleTest)
+add_executable(xgct_tests unit/test_migration.cpp unit/test_containers.cpp)
+set_target_properties(xgct_tests PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
+target_link_libraries(xgct_tests PRIVATE xgct::list xgct::hash xgct::bitset xgct::ring_buffer GTest::gtest_main)
+xgct_warnings(xgct_tests)
+gtest_discover_tests(xgct_tests DISCOVERY_MODE POST_BUILD PROPERTIES LABELS "unit" TIMEOUT 30)
