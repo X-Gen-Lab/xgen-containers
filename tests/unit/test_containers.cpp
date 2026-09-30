@@ -1,11 +1,71 @@
 #include <xgen/containers/bitset.h>
 #include <xgen/containers/ring_buffer.h>
 #include <xgen/containers/list.h>
+#include <xgen/containers/hash.h>
 #include <gtest/gtest.h>
 #include <array>
 #include <cstring>
 #include <deque>
 #include <limits>
+
+TEST(List, ClearDetachesAndDiagnosisDetectsCountLinksAndCycles) {
+    xgct_list_t list{};
+    xgct_list_node_t nodes[3]{};
+    EXPECT_FALSE(xgct_list_validate(nullptr));
+    EXPECT_TRUE(xgct_list_validate(&list));
+    for (auto& node : nodes) { xgct_list_insert_tail(&list, &node); }
+    EXPECT_TRUE(xgct_list_validate(&list));
+    ++list.count;
+    EXPECT_FALSE(xgct_list_validate(&list));
+    --list.count;
+    nodes[1].prev = nullptr;
+    EXPECT_FALSE(xgct_list_validate(&list));
+    nodes[1].prev = &nodes[0];
+    nodes[2].next = &nodes[0];
+    EXPECT_FALSE(xgct_list_validate(&list));
+    nodes[2].next = nullptr;
+    list.tail = &nodes[1];
+    EXPECT_FALSE(xgct_list_validate(&list));
+    list.tail = &nodes[2];
+    xgct_list_clear(&list);
+    EXPECT_TRUE(xgct_list_validate(&list));
+    for (auto& node : nodes) {
+        EXPECT_EQ(node.prev, nullptr);
+        EXPECT_EQ(node.next, nullptr);
+        xgct_list_insert_head(&list, &node);
+    }
+    xgct_list_node_t* node;
+    xgct_list_node_t* next;
+    XGCT_LIST_FOR_EACH_SAFE(&list, node, next) { xgct_list_remove(&list, node); }
+    EXPECT_EQ(xgct_list_count(&list), 0U);
+    xgct_list_clear(nullptr);
+}
+TEST(Hash, DiagnosticRejectsCyclesOwnershipAndCount) {
+    xgct_hash_t table{};
+    xgct_hash_node_t* buckets[1];
+    xgct_hash_node_t nodes[3]{};
+    EXPECT_FALSE(xgct_hash_validate(nullptr));
+    EXPECT_FALSE(xgct_hash_validate(&table));
+    ASSERT_EQ(xgct_hash_init(&table, buckets, 1, 3), XGS_OK);
+    EXPECT_TRUE(xgct_hash_validate(&table));
+    for (uint32_t i = 0; i < 3; ++i) {
+        EXPECT_EQ(xgct_hash_insert(&table, &nodes[i], i, nullptr), XGS_OK);
+    }
+    EXPECT_TRUE(xgct_hash_validate(&table));
+    nodes[0].next = &nodes[2];
+    EXPECT_FALSE(xgct_hash_validate(&table));
+    nodes[0].next = nullptr;
+    nodes[1].owner = nullptr;
+    EXPECT_FALSE(xgct_hash_validate(&table));
+    nodes[1].owner = &table;
+    --table.count;
+    EXPECT_FALSE(xgct_hash_validate(&table));
+    ++table.count;
+    ++table.capacity;
+    EXPECT_TRUE(xgct_hash_validate(&table));
+    xgct_hash_clear(&table);
+    EXPECT_TRUE(xgct_hash_validate(&table));
+}
 
 TEST(Bitset, BoundsTailAndBorrowedView) {
     uint8_t bytes[4] = {255, 255, 255, 99};

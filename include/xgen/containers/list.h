@@ -121,6 +121,22 @@ xgct_list_node_t *xgct_list_next(const xgct_list_node_t *node);
  */
 xgct_list_node_t *xgct_list_prev(const xgct_list_node_t *node);
 
+/**
+ * \brief           Detach all members without destroying caller objects.
+ * \param[in,out]   list: Valid initialized list; NULL is ignored.
+ * \note            Work is O(count); every detached node can be reinserted.
+ */
+void xgct_list_clear(xgct_list_t* list);
+/**
+ * \brief           Diagnose links and count with bounded traversal.
+ * \param[in]       list: List whose pointer fields refer to live nodes, or NULL.
+ * \return          true for consistent structure, false otherwise.
+ * \note            This does not validate arbitrary addresses or detect shared
+ *                  ownership of singleton nodes. Mutations retain their stated
+ *                  membership preconditions; no owner pointer is added.
+ */
+bool xgct_list_validate(const xgct_list_t* list);
+
 #define XGCT_LIST_ENTRY(ptr, type, member) \
     ((type *) (void *) ((char *) (ptr) - offsetof(type, member)))
 #define XGCT_LIST_FOR_EACH(list, node) \

@@ -11,6 +11,7 @@
 #include <xgen/status/status.h>
 
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -91,6 +92,14 @@ void xgct_hash_clear(xgct_hash_t *table);
  * \return          Calculated or queried value
  */
 size_t xgct_hash_count(const xgct_hash_t *table);
+
+/**
+ * \brief           Diagnose count, membership and bucket placement.
+ * \param[in]       table: Index containing live pointer targets, or NULL.
+ * \return          true for consistent structure; false for invalid or cyclic
+ *                  structure. Does not validate arbitrary memory addresses.
+ */
+bool xgct_hash_validate(const xgct_hash_t* table);
 
 #ifdef __cplusplus
 }
