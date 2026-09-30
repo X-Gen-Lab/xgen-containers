@@ -4,17 +4,19 @@
  */
 #ifndef XGCT_EXAMPLE_CIRCULAR_DMA_H
 #define XGCT_EXAMPLE_CIRCULAR_DMA_H
-#include <xgen/containers/ring_buffer.h>
 #include <stdbool.h>
-/** \brief           Board-owned DMA snapshot accounting; no hardware control. */
+#include <xgen/containers/ring_buffer.h>
+/** \brief           Board-owned DMA snapshot accounting; no hardware control.
+ */
 typedef struct {
     const uint8_t* storage; /**< Stable DMA snapshot bytes. */
-    size_t capacity; /**< Circular DMA byte capacity. */
-    uint64_t consumed; /**< Absolute copied byte count, never wraps. */
+    size_t capacity;        /**< Circular DMA byte capacity. */
+    uint64_t consumed;      /**< Absolute copied byte count, never wraps. */
     bool overrun; /**< Latched overwrite requiring explicit board recovery. */
 } dma_cycle_t;
 /**
- * \brief           Copy a stable hardware snapshot into a bounded software ring.
+ * \brief           Copy a stable hardware snapshot into a bounded software
+ * ring.
  * \param[in,out]   cycle: Initialized with storage/capacity and zero counters.
  * \param[in,out]   destination: Distinct software ring, externally serialized.
  * \param[in]       produced: Monotonic absolute hardware production count.

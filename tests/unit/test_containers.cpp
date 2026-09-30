@@ -1,19 +1,25 @@
-#include <xgen/containers/bitset.h>
-#include <xgen/containers/ring_buffer.h>
-#include <xgen/containers/list.h>
-#include <xgen/containers/hash.h>
-#include <gtest/gtest.h>
+/**
+ * \file            test_containers.cpp
+ * \brief           Container behavioral contract tests
+ */
 #include <array>
 #include <cstring>
 #include <deque>
+#include <gtest/gtest.h>
 #include <limits>
+#include <xgen/containers/bitset.h>
+#include <xgen/containers/hash.h>
+#include <xgen/containers/list.h>
+#include <xgen/containers/ring_buffer.h>
 
 TEST(List, ClearDetachesAndDiagnosisDetectsCountLinksAndCycles) {
     xgct_list_t list{};
     xgct_list_node_t nodes[3]{};
     EXPECT_FALSE(xgct_list_validate(nullptr));
     EXPECT_TRUE(xgct_list_validate(&list));
-    for (auto& node : nodes) { xgct_list_insert_tail(&list, &node); }
+    for (auto& node : nodes) {
+        xgct_list_insert_tail(&list, &node);
+    }
     EXPECT_TRUE(xgct_list_validate(&list));
     ++list.count;
     EXPECT_FALSE(xgct_list_validate(&list));
@@ -36,7 +42,9 @@ TEST(List, ClearDetachesAndDiagnosisDetectsCountLinksAndCycles) {
     }
     xgct_list_node_t* node;
     xgct_list_node_t* next;
-    XGCT_LIST_FOR_EACH_SAFE(&list, node, next) { xgct_list_remove(&list, node); }
+    XGCT_LIST_FOR_EACH_SAFE(&list, node, next) {
+        xgct_list_remove(&list, node);
+    }
     EXPECT_EQ(xgct_list_count(&list), 0U);
     xgct_list_clear(nullptr);
 }
@@ -124,7 +132,8 @@ TEST(Ring, DmaRxTxPartialCompletionAndCancellation) {
     EXPECT_EQ(xgct_ring_write(&ring, "x", 1), 0U);
     std::memcpy(rx.data, "abcdef", 6);
     EXPECT_EQ(xgct_ring_write_finish(&ring, rx.token, 7), XGS_INVALID_ARGUMENT);
-    EXPECT_EQ(xgct_ring_write_finish(&ring, rx.token + 1, 4), XGS_INVALID_ARGUMENT);
+    EXPECT_EQ(xgct_ring_write_finish(&ring, rx.token + 1, 4),
+              XGS_INVALID_ARGUMENT);
     ASSERT_EQ(xgct_ring_write_finish(&ring, rx.token, 4), XGS_OK);
     EXPECT_EQ(xgct_ring_write_finish(&ring, rx.token, 4), XGS_INVALID_ARGUMENT);
     xgct_ring_read_span_t tx{};
@@ -161,15 +170,22 @@ TEST(Ring, WrapCapacityOneAndCopyReferenceModel) {
             seed = seed * 1664525U + 1013904223U;
             const size_t request = (seed >> 8U) % 20U;
             uint8_t data[20];
-            for (size_t j = 0; j < 20; ++j) { data[j] = static_cast<uint8_t>(iteration + j); }
+            for (size_t j = 0; j < 20; ++j) {
+                data[j] = static_cast<uint8_t>(iteration + j);
+            }
             if ((seed & 4U) != 0) {
                 const size_t actual = xgct_ring_write(&ring, data, request);
                 ASSERT_EQ(actual, std::min(request, capacity - model.size()));
-                for (size_t j = 0; j < actual; ++j) { model.push_back(data[j]); }
+                for (size_t j = 0; j < actual; ++j) {
+                    model.push_back(data[j]);
+                }
             } else {
                 const size_t actual = xgct_ring_read(&ring, data, request);
                 ASSERT_EQ(actual, std::min(request, model.size()));
-                for (size_t j = 0; j < actual; ++j) { EXPECT_EQ(data[j], model.front()); model.pop_front(); }
+                for (size_t j = 0; j < actual; ++j) {
+                    EXPECT_EQ(data[j], model.front());
+                    model.pop_front();
+                }
             }
             EXPECT_EQ(xgct_ring_readable(&ring), model.size());
             EXPECT_EQ(xgct_ring_writable(&ring), capacity - model.size());
@@ -236,4 +252,30 @@ TEST(Ring, InvalidArgumentsLeaveClaimsAndOutputsUnchanged) {
     EXPECT_EQ(xgct_ring_write_claim(&ring, 1, &write), XGS_CAPACITY);
     EXPECT_EQ(xgct_ring_write(&ring, "x", 1), 1U);
     EXPECT_EQ(xgct_ring_read_claim(&ring, 1, &read), XGS_CAPACITY);
+}
+
+TEST(Ring, OppositeDmaCompletionsPreserveReservedDataInEitherOrder) {
+    for (bool writer_first : {false, true}) {
+        uint8_t bytes[8]{};
+        uint8_t output[8]{};
+        xgct_ring_buffer_t ring{};
+        ASSERT_EQ(xgct_ring_init(&ring, bytes, 8), XGS_OK);
+        ASSERT_EQ(xgct_ring_write(&ring, "abcd", 4), 4U);
+        xgct_ring_read_span_t tx{};
+        xgct_ring_write_span_t rx{};
+        ASSERT_EQ(xgct_ring_read_claim(&ring, 4, &tx), XGS_OK);
+        ASSERT_EQ(xgct_ring_write_claim(&ring, 4, &rx), XGS_OK);
+        std::memcpy(rx.data, "efxx", 4);
+        EXPECT_EQ(std::memcmp(tx.data, "abcd", 4), 0);
+        if (writer_first) {
+            ASSERT_EQ(xgct_ring_write_finish(&ring, rx.token, 2), XGS_OK);
+            EXPECT_EQ(std::memcmp(tx.data, "abcd", 4), 0);
+            ASSERT_EQ(xgct_ring_read_finish(&ring, tx.token, 3), XGS_OK);
+        } else {
+            ASSERT_EQ(xgct_ring_read_finish(&ring, tx.token, 3), XGS_OK);
+            ASSERT_EQ(xgct_ring_write_finish(&ring, rx.token, 2), XGS_OK);
+        }
+        ASSERT_EQ(xgct_ring_read(&ring, output, 8), 3U);
+        EXPECT_EQ(std::memcmp(output, "def", 3), 0);
+    }
 }

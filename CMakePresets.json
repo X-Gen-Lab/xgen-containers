@@ -1,0 +1,59 @@
+{
+  "version": 5,
+  "cmakeMinimumRequired": {"major": 3, "minor": 24, "patch": 0},
+  "configurePresets": [
+    {
+      "name": "host",
+      "displayName": "Host GoogleTest Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_PREFIX_PATH": "${sourceDir}/out/deps/gtest;${sourceDir}/out/deps/status",
+        "XGCT_BUILD_TESTS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "C-only Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "XGCT_BUILD_TESTS": "OFF"
+      }
+    },
+    {
+      "name": "coverage",
+      "displayName": "GCC production coverage",
+      "inherits": "host",
+      "binaryDir": "${sourceDir}/out/coverage",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "XGCT_ENABLE_COVERAGE": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {"name": "host", "configurePreset": "host"},
+    {"name": "release", "configurePreset": "release"},
+    {"name": "coverage", "configurePreset": "coverage"}
+  ],
+  "testPresets": [
+    {
+      "name": "host",
+      "configurePreset": "host",
+      "output": {"outputOnFailure": true},
+      "execution": {"noTestsAction": "error"}
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage",
+      "output": {"outputOnFailure": true},
+      "execution": {"noTestsAction": "error"}
+    }
+  ]
+}

@@ -39,8 +39,7 @@ bool xgct_list_validate(const xgct_list_t* list) {
 /**
  * \brief           Initialize a list
  */
-void xgct_list_init(xgct_list_t *list)
-{
+void xgct_list_init(xgct_list_t* list) {
     if (list == NULL) {
         return;
     }
@@ -53,8 +52,7 @@ void xgct_list_init(xgct_list_t *list)
 /**
  * \brief           Initialize a list node
  */
-void xgct_list_node_init(xgct_list_node_t *node)
-{
+void xgct_list_node_init(xgct_list_node_t* node) {
     if (node == NULL) {
         return;
     }
@@ -70,8 +68,7 @@ void xgct_list_node_init(xgct_list_node_t *node)
 /**
  * \brief           Check if list is empty
  */
-bool xgct_list_is_empty(const xgct_list_t *list)
-{
+bool xgct_list_is_empty(const xgct_list_t* list) {
     if (list == NULL) {
         return true;
     }
@@ -82,8 +79,7 @@ bool xgct_list_is_empty(const xgct_list_t *list)
 /**
  * \brief           Get number of nodes in list
  */
-size_t xgct_list_count(const xgct_list_t *list)
-{
+size_t xgct_list_count(const xgct_list_t* list) {
     if (list == NULL) {
         return 0;
     }
@@ -98,8 +94,7 @@ size_t xgct_list_count(const xgct_list_t *list)
 /**
  * \brief           Insert node at head of list
  */
-void xgct_list_insert_head(xgct_list_t *list, xgct_list_node_t *node)
-{
+void xgct_list_insert_head(xgct_list_t* list, xgct_list_node_t* node) {
     if (list == NULL || node == NULL) {
         return;
     }
@@ -121,8 +116,7 @@ void xgct_list_insert_head(xgct_list_t *list, xgct_list_node_t *node)
 /**
  * \brief           Insert node at tail of list
  */
-void xgct_list_insert_tail(xgct_list_t *list, xgct_list_node_t *node)
-{
+void xgct_list_insert_tail(xgct_list_t* list, xgct_list_node_t* node) {
     if (list == NULL || node == NULL) {
         return;
     }
@@ -144,9 +138,8 @@ void xgct_list_insert_tail(xgct_list_t *list, xgct_list_node_t *node)
 /**
  * \brief           Insert node after specified node
  */
-void xgct_list_insert_after(xgct_list_t *list, xgct_list_node_t *pos,
-                           xgct_list_node_t *node)
-{
+void xgct_list_insert_after(xgct_list_t* list, xgct_list_node_t* pos,
+                            xgct_list_node_t* node) {
     if (list == NULL || pos == NULL || node == NULL) {
         return;
     }
@@ -168,9 +161,8 @@ void xgct_list_insert_after(xgct_list_t *list, xgct_list_node_t *pos,
 /**
  * \brief           Insert node before specified node
  */
-void xgct_list_insert_before(xgct_list_t *list, xgct_list_node_t *pos,
-                            xgct_list_node_t *node)
-{
+void xgct_list_insert_before(xgct_list_t* list, xgct_list_node_t* pos,
+                             xgct_list_node_t* node) {
     if (list == NULL || pos == NULL || node == NULL) {
         return;
     }
@@ -196,8 +188,7 @@ void xgct_list_insert_before(xgct_list_t *list, xgct_list_node_t *pos,
 /**
  * \brief           Remove node from list
  */
-void xgct_list_remove(xgct_list_t *list, xgct_list_node_t *node)
-{
+void xgct_list_remove(xgct_list_t* list, xgct_list_node_t* node) {
     if (list == NULL || node == NULL) {
         return;
     }
@@ -228,13 +219,12 @@ void xgct_list_remove(xgct_list_t *list, xgct_list_node_t *node)
 /**
  * \brief           Remove and return head node
  */
-xgct_list_node_t *xgct_list_remove_head(xgct_list_t *list)
-{
+xgct_list_node_t* xgct_list_remove_head(xgct_list_t* list) {
     if (list == NULL || list->head == NULL) {
         return NULL;
     }
 
-    xgct_list_node_t *node = list->head;
+    xgct_list_node_t* node = list->head;
     xgct_list_remove(list, node);
     return node;
 }
@@ -242,13 +232,12 @@ xgct_list_node_t *xgct_list_remove_head(xgct_list_t *list)
 /**
  * \brief           Remove and return tail node
  */
-xgct_list_node_t *xgct_list_remove_tail(xgct_list_t *list)
-{
+xgct_list_node_t* xgct_list_remove_tail(xgct_list_t* list) {
     if (list == NULL || list->tail == NULL) {
         return NULL;
     }
 
-    xgct_list_node_t *node = list->tail;
+    xgct_list_node_t* node = list->tail;
     xgct_list_remove(list, node);
     return node;
 }
@@ -260,8 +249,7 @@ xgct_list_node_t *xgct_list_remove_tail(xgct_list_t *list)
 /**
  * \brief           Get head node without removing
  */
-xgct_list_node_t *xgct_list_peek_head(const xgct_list_t *list)
-{
+xgct_list_node_t* xgct_list_peek_head(const xgct_list_t* list) {
     if (list == NULL) {
         return NULL;
     }
@@ -272,8 +260,7 @@ xgct_list_node_t *xgct_list_peek_head(const xgct_list_t *list)
 /**
  * \brief           Get tail node without removing
  */
-xgct_list_node_t *xgct_list_peek_tail(const xgct_list_t *list)
-{
+xgct_list_node_t* xgct_list_peek_tail(const xgct_list_t* list) {
     if (list == NULL) {
         return NULL;
     }
@@ -284,8 +271,7 @@ xgct_list_node_t *xgct_list_peek_tail(const xgct_list_t *list)
 /**
  * \brief           Get next node in list
  */
-xgct_list_node_t *xgct_list_next(const xgct_list_node_t *node)
-{
+xgct_list_node_t* xgct_list_next(const xgct_list_node_t* node) {
     if (node == NULL) {
         return NULL;
     }
@@ -296,8 +282,7 @@ xgct_list_node_t *xgct_list_next(const xgct_list_node_t *node)
 /**
  * \brief           Get previous node in list
  */
-xgct_list_node_t *xgct_list_prev(const xgct_list_node_t *node)
-{
+xgct_list_node_t* xgct_list_prev(const xgct_list_node_t* node) {
     if (node == NULL) {
         return NULL;
     }

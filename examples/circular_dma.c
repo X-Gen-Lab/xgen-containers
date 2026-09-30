@@ -25,8 +25,8 @@ xgs_status_t dma_cycle_drain(dma_cycle_t* cycle,
         if (amount > cycle->capacity - offset) {
             amount = cycle->capacity - offset;
         }
-        size_t copied = xgct_ring_write(destination, cycle->storage + offset,
-                                        amount);
+        size_t copied =
+            xgct_ring_write(destination, cycle->storage + offset, amount);
         cycle->consumed += copied;
         if (copied != amount) {
             return XGS_CAPACITY;

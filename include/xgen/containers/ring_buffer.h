@@ -4,9 +4,9 @@
  */
 #ifndef XGCT_RING_BUFFER_H
 #define XGCT_RING_BUFFER_H
-#include <xgen/status/status.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <xgen/status/status.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,28 +24,30 @@ extern "C" {
  *                  reset); reinit requires all old callbacks to be quiescent.
  */
 typedef struct {
-    uint8_t* storage; /**< Borrowed bytes. */
-    size_t capacity; /**< Buffer byte capacity. */
-    size_t read_pos; /**< Next committed readable byte. */
-    size_t write_pos; /**< Next writable byte. */
-    size_t count; /**< Committed readable bytes. */
-    size_t read_reserved; /**< Reader's claimed bytes. */
+    uint8_t* storage;      /**< Borrowed bytes. */
+    size_t capacity;       /**< Buffer byte capacity. */
+    size_t read_pos;       /**< Next committed readable byte. */
+    size_t write_pos;      /**< Next writable byte. */
+    size_t count;          /**< Committed readable bytes. */
+    size_t read_reserved;  /**< Reader's claimed bytes. */
     size_t write_reserved; /**< Writer's claimed bytes. */
-    uint64_t sequence; /**< Last claim ID; never wraps. */
-    uint64_t read_token; /**< Active reader ID, or zero. */
-    uint64_t write_token; /**< Active writer ID, or zero. */
+    uint64_t sequence;     /**< Last claim ID; never wraps. */
+    uint64_t read_token;   /**< Active reader ID, or zero. */
+    uint64_t write_token;  /**< Active writer ID, or zero. */
 } xgct_ring_buffer_t;
-/** \brief           Writable contiguous reservation, invalid after completion. */
+/** \brief           Writable contiguous reservation, invalid after completion.
+ */
 typedef struct {
-    uint8_t* data; /**< Writable span. */
-    size_t size; /**< Reserved byte count. */
+    uint8_t* data;  /**< Writable span. */
+    size_t size;    /**< Reserved byte count. */
     uint64_t token; /**< Identity required by finish/cancel. */
 } xgct_ring_write_span_t;
-/** \brief           Readable contiguous reservation, invalid after completion. */
+/** \brief           Readable contiguous reservation, invalid after completion.
+ */
 typedef struct {
     const uint8_t* data; /**< Read-only span, including during TX DMA. */
-    size_t size; /**< Reserved byte count. */
-    uint64_t token; /**< Identity required by finish/cancel. */
+    size_t size;         /**< Reserved byte count. */
+    uint64_t token;      /**< Identity required by finish/cancel. */
 } xgct_ring_read_span_t;
 /**
  * \brief           Initialize an empty ring without clearing storage.
@@ -54,7 +56,8 @@ typedef struct {
  * \param[in]       capacity: Nonzero capacity; any size is supported.
  * \return          OK or INVALID_ARGUMENT; failure leaves objects unchanged.
  */
-xgs_status_t xgct_ring_init(xgct_ring_buffer_t* ring, void* storage, size_t capacity);
+xgs_status_t xgct_ring_init(xgct_ring_buffer_t* ring, void* storage,
+                            size_t capacity);
 /**
  * \brief           Discard queued bytes, preserving claim identity history.
  * \param[in,out]   ring: Initialized state.
@@ -84,11 +87,12 @@ size_t xgct_ring_writable(const xgct_ring_buffer_t* ring);
  * \param[in,out]   ring: Initialized state.
  * \param[in]       requested: Nonzero upper bound in bytes.
  * \param[out]      span: Separate output descriptor, unchanged on failure.
- * \return          OK, INVALID_ARGUMENT, BUSY, or CAPACITY (full or ID exhausted).
+ * \return          OK, INVALID_ARGUMENT, BUSY, or CAPACITY (full or ID
+ * exhausted).
  * \note            RX DMA writes remain unpublished until write_finish.
  */
 xgs_status_t xgct_ring_write_claim(xgct_ring_buffer_t* ring, size_t requested,
-                                  xgct_ring_write_span_t* span);
+                                   xgct_ring_write_span_t* span);
 /**
  * \brief           Publish a prefix and release the entire reservation.
  * \param[in,out]   ring: Initialized state.
@@ -98,7 +102,7 @@ xgs_status_t xgct_ring_write_claim(xgct_ring_buffer_t* ring, size_t requested,
  * \note            Duplicate/stale IDs within this lifetime are rejected.
  */
 xgs_status_t xgct_ring_write_finish(xgct_ring_buffer_t* ring, uint64_t token,
-                                   size_t completed);
+                                    size_t completed);
 /**
  * \brief           Release a stopped writer reservation without publishing.
  * \param[in,out]   ring: Initialized state.
@@ -111,11 +115,12 @@ xgs_status_t xgct_ring_write_cancel(xgct_ring_buffer_t* ring, uint64_t token);
  * \param[in,out]   ring: Initialized state.
  * \param[in]       requested: Nonzero upper bound in bytes.
  * \param[out]      span: Separate output descriptor, unchanged on failure.
- * \return          OK, INVALID_ARGUMENT, BUSY, or CAPACITY (empty or ID exhausted).
+ * \return          OK, INVALID_ARGUMENT, BUSY, or CAPACITY (empty or ID
+ * exhausted).
  * \note            TX DMA may read these bytes until read_finish/cancel.
  */
 xgs_status_t xgct_ring_read_claim(xgct_ring_buffer_t* ring, size_t requested,
-                                 xgct_ring_read_span_t* span);
+                                  xgct_ring_read_span_t* span);
 /**
  * \brief           Consume a prefix; unconsumed bytes remain queued.
  * \param[in,out]   ring: Initialized state.
@@ -124,7 +129,7 @@ xgs_status_t xgct_ring_read_claim(xgct_ring_buffer_t* ring, size_t requested,
  * \return          OK or INVALID_ARGUMENT; failure changes nothing.
  */
 xgs_status_t xgct_ring_read_finish(xgct_ring_buffer_t* ring, uint64_t token,
-                                  size_t completed);
+                                   size_t completed);
 /**
  * \brief           Release a stopped reader reservation without consuming.
  * \param[in,out]   ring: Initialized state.
@@ -139,7 +144,8 @@ xgs_status_t xgct_ring_read_cancel(xgct_ring_buffer_t* ring, uint64_t token);
  * \param[in]       size: Requested bytes.
  * \return          Copied count; zero on invalid input, writer busy, or full.
  */
-size_t xgct_ring_write(xgct_ring_buffer_t* ring, const void* source, size_t size);
+size_t xgct_ring_write(xgct_ring_buffer_t* ring, const void* source,
+                       size_t size);
 /**
  * \brief           Copy and consume up to the committed byte count.
  * \param[in,out]   ring: Initialized state with no reader claim.

@@ -4,10 +4,10 @@
  */
 #ifndef XGCT_BITSET_H
 #define XGCT_BITSET_H
-#include <xgen/status/status.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <xgen/status/status.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,7 +37,7 @@ size_t xgct_bitset_storage_size(size_t bit_count);
  * \return          OK, INVALID_ARGUMENT, or CAPACITY. Errors change nothing.
  */
 xgs_status_t xgct_bitset_init(xgct_bitset_t* set, void* storage,
-                             size_t storage_size, size_t bit_count);
+                              size_t storage_size, size_t bit_count);
 /**
  * \brief           Set a bit without modifying unused tail bits.
  * \param[in,out]   set: Initialized descriptor.

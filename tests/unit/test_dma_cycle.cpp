@@ -1,10 +1,15 @@
+/**
+ * \file            test_dma_cycle.cpp
+ * \brief           Container behavioral contract tests
+ */
 extern "C" {
 #include "../../examples/circular_dma.h"
 }
-#include <gtest/gtest.h>
 #include <cstring>
-TEST(CircularDma, CountsWrapEventsAndBackpressureWithoutGuessingModuloPosition) {
-    uint8_t hardware[4] = {'a','b','c','d'};
+#include <gtest/gtest.h>
+TEST(CircularDma,
+     CountsWrapEventsAndBackpressureWithoutGuessingModuloPosition) {
+    uint8_t hardware[4] = {'a', 'b', 'c', 'd'};
     uint8_t software[3]{};
     uint8_t output[4]{};
     xgct_ring_buffer_t ring{};
@@ -28,7 +33,7 @@ TEST(CircularDma, CountsWrapEventsAndBackpressureWithoutGuessingModuloPosition) 
     EXPECT_EQ(dma_cycle_drain(&cycle, &ring, 11), XGS_CAPACITY);
 }
 TEST(CircularDma, RejectsInvalidObjectsAndDoesNotCompeteWithRxReservation) {
-    uint8_t hardware[2] = {1,2};
+    uint8_t hardware[2] = {1, 2};
     uint8_t software[4]{};
     xgct_ring_buffer_t ring{};
     dma_cycle_t cycle{hardware, 2, 0, false};

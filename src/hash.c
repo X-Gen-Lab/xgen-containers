@@ -7,13 +7,12 @@
 
 #include <xgen/containers/hash.h>
 
-static size_t bucket_index(const xgct_hash_t *table, uint32_t key)
-{
+static size_t bucket_index(const xgct_hash_t* table, uint32_t key) {
     /* Multiplicative mixing, with high bits folded into the bucket index. */
     key ^= key >> 16U;
     key *= UINT32_C(0x7feb352d);
     key ^= key >> 15U;
-    return (size_t) key & (table->bucket_count - 1U);
+    return (size_t)key & (table->bucket_count - 1U);
 }
 
 bool xgct_hash_validate(const xgct_hash_t* table) {
@@ -37,9 +36,8 @@ bool xgct_hash_validate(const xgct_hash_t* table) {
     return count == table->count;
 }
 
-xgs_status_t xgct_hash_init(xgct_hash_t *table, xgct_hash_node_t **buckets,
-                           size_t bucket_count, size_t capacity)
-{
+xgs_status_t xgct_hash_init(xgct_hash_t* table, xgct_hash_node_t** buckets,
+                            size_t bucket_count, size_t capacity) {
     if (table == NULL || buckets == NULL || bucket_count == 0U ||
         (bucket_count & (bucket_count - 1U)) != 0U || capacity == 0U ||
         bucket_count > SIZE_MAX / sizeof(*buckets)) {
@@ -48,23 +46,21 @@ xgs_status_t xgct_hash_init(xgct_hash_t *table, xgct_hash_node_t **buckets,
     for (size_t i = 0U; i < bucket_count; ++i) {
         buckets[i] = NULL;
     }
-    *table = (xgct_hash_t) {buckets, bucket_count, capacity, 0U};
+    *table = (xgct_hash_t){buckets, bucket_count, capacity, 0U};
     return XGS_OK;
 }
 
-void xgct_hash_node_init(xgct_hash_node_t *node)
-{
+void xgct_hash_node_init(xgct_hash_node_t* node) {
     if (node != NULL) {
-        *node = (xgct_hash_node_t) {0};
+        *node = (xgct_hash_node_t){0};
     }
 }
 
-xgct_hash_node_t *xgct_hash_find(const xgct_hash_t *table, uint32_t key)
-{
+xgct_hash_node_t* xgct_hash_find(const xgct_hash_t* table, uint32_t key) {
     if (table == NULL || table->buckets == NULL || table->bucket_count == 0U) {
         return NULL;
     }
-    xgct_hash_node_t *node = table->buckets[bucket_index(table, key)];
+    xgct_hash_node_t* node = table->buckets[bucket_index(table, key)];
     while (node != NULL) {
         if (node->key == key) {
             return node;
@@ -74,9 +70,8 @@ xgct_hash_node_t *xgct_hash_find(const xgct_hash_t *table, uint32_t key)
     return NULL;
 }
 
-xgs_status_t xgct_hash_insert(xgct_hash_t *table, xgct_hash_node_t *node,
-                             uint32_t key, void *value)
-{
+xgs_status_t xgct_hash_insert(xgct_hash_t* table, xgct_hash_node_t* node,
+                              uint32_t key, void* value) {
     if (table == NULL || table->buckets == NULL || table->bucket_count == 0U ||
         node == NULL) {
         return XGS_INVALID_ARGUMENT;
@@ -101,14 +96,13 @@ xgs_status_t xgct_hash_insert(xgct_hash_t *table, xgct_hash_node_t *node,
     return XGS_OK;
 }
 
-xgct_hash_node_t *xgct_hash_remove(xgct_hash_t *table, uint32_t key)
-{
+xgct_hash_node_t* xgct_hash_remove(xgct_hash_t* table, uint32_t key) {
     if (table == NULL || table->buckets == NULL || table->bucket_count == 0U) {
         return NULL;
     }
-    xgct_hash_node_t **link = &table->buckets[bucket_index(table, key)];
+    xgct_hash_node_t** link = &table->buckets[bucket_index(table, key)];
     while (*link != NULL) {
-        xgct_hash_node_t *node = *link;
+        xgct_hash_node_t* node = *link;
         if (node->key == key) {
             *link = node->next;
             node->next = NULL;
@@ -121,15 +115,14 @@ xgct_hash_node_t *xgct_hash_remove(xgct_hash_t *table, uint32_t key)
     return NULL;
 }
 
-void xgct_hash_clear(xgct_hash_t *table)
-{
+void xgct_hash_clear(xgct_hash_t* table) {
     if (table == NULL || table->buckets == NULL) {
         return;
     }
     for (size_t i = 0U; i < table->bucket_count; ++i) {
-        xgct_hash_node_t *node = table->buckets[i];
+        xgct_hash_node_t* node = table->buckets[i];
         while (node != NULL) {
-            xgct_hash_node_t *next = node->next;
+            xgct_hash_node_t* next = node->next;
             node->next = NULL;
             node->owner = NULL;
             node = next;
@@ -139,7 +132,6 @@ void xgct_hash_clear(xgct_hash_t *table)
     table->count = 0U;
 }
 
-size_t xgct_hash_count(const xgct_hash_t *table)
-{
+size_t xgct_hash_count(const xgct_hash_t* table) {
     return table == NULL ? 0U : table->count;
 }

@@ -1,8 +1,11 @@
-﻿#include <xgen/containers/list.h>
-#include <xgen/containers/hash.h>
+/**
+ * \file            test_migration.cpp
+ * \brief           Container behavioral contract tests
+ */
 #include <gtest/gtest.h>
-TEST(Migration, List)
-{
+#include <xgen/containers/hash.h>
+#include <xgen/containers/list.h>
+TEST(Migration, List) {
     xgct_list_t list;
     xgct_list_node_t nodes[4];
     xgct_list_init(&list);
@@ -30,8 +33,7 @@ TEST(Migration, List)
     EXPECT_TRUE(xgct_list_count(&list) == 0U && xgct_list_is_empty(&list));
     EXPECT_TRUE(list.head == NULL && list.tail == NULL);
 }
-TEST(Migration, Hash)
-{
+TEST(Migration, Hash) {
     xgct_hash_t table, other;
     xgct_hash_node_t *buckets[1], *other_buckets[2];
     xgct_hash_node_t nodes[4] = {};
@@ -44,7 +46,8 @@ TEST(Migration, Hash)
     EXPECT_TRUE(xgct_hash_find(&table, 5U) == &nodes[1]);
     EXPECT_TRUE(xgct_hash_find(&table, 5U)->value == NULL);
     EXPECT_TRUE(xgct_hash_find(&table, 7U) == NULL);
-    EXPECT_TRUE(xgct_hash_insert(&table, &nodes[2], 3U, NULL) == XGS_ALREADY_EXISTS);
+    EXPECT_TRUE(xgct_hash_insert(&table, &nodes[2], 3U, NULL) ==
+                XGS_ALREADY_EXISTS);
     EXPECT_TRUE(xgct_hash_insert(&table, &nodes[2], 7U, NULL) == XGS_CAPACITY);
     EXPECT_TRUE(xgct_hash_insert(&other, &nodes[0], 9U, NULL) == XGS_BUSY);
     EXPECT_TRUE(xgct_hash_remove(&table, 3U) == &nodes[0]);
