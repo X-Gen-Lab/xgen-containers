@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <xgen/containers/hash.h>
 #include <xgen/containers/list.h>
+
 TEST(Migration, List) {
     xgct_list_t list;
     xgct_list_node_t nodes[4];
@@ -33,6 +34,7 @@ TEST(Migration, List) {
     EXPECT_TRUE(xgct_list_count(&list) == 0U && xgct_list_is_empty(&list));
     EXPECT_TRUE(list.head == NULL && list.tail == NULL);
 }
+
 TEST(Migration, Hash) {
     xgct_hash_t table, other;
     xgct_hash_node_t *buckets[1], *other_buckets[2];

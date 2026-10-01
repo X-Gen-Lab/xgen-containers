@@ -21,6 +21,7 @@ static size_t advance(size_t position, size_t amount, size_t capacity) {
     size_t tail = capacity - position;
     return amount >= tail ? amount - tail : position + amount;
 }
+
 /* NOLINTEND(bugprone-easily-swappable-parameters) */
 
 xgs_status_t xgct_ring_init(xgct_ring_buffer_t* ring, void* storage,
@@ -159,6 +160,7 @@ size_t xgct_ring_write(xgct_ring_buffer_t* ring, const void* source,
     ring->count += amount;
     return amount;
 }
+
 /* NOLINTEND(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)
  */
 
@@ -183,5 +185,6 @@ size_t xgct_ring_read(xgct_ring_buffer_t* ring, void* destination,
     ring->count -= amount;
     return amount;
 }
+
 /* NOLINTEND(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)
  */

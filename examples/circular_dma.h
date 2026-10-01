@@ -2,10 +2,13 @@
  * \file            circular_dma.h
  * \brief           Explicit circular-DMA event accounting integration example
  */
+
 #ifndef XGCT_EXAMPLE_CIRCULAR_DMA_H
 #define XGCT_EXAMPLE_CIRCULAR_DMA_H
+
 #include <stdbool.h>
 #include <xgen/containers/ring_buffer.h>
+
 /** \brief           Board-owned DMA snapshot accounting; no hardware control.
  */
 typedef struct {
@@ -14,6 +17,7 @@ typedef struct {
     uint64_t consumed;      /**< Absolute copied byte count, never wraps. */
     bool overrun; /**< Latched overwrite requiring explicit board recovery. */
 } dma_cycle_t;
+
 /**
  * \brief           Copy a stable hardware snapshot into a bounded software
  * ring.
@@ -35,4 +39,5 @@ typedef struct {
 xgs_status_t dma_cycle_drain(dma_cycle_t* cycle,
                              xgct_ring_buffer_t* destination,
                              uint64_t produced);
+
 #endif

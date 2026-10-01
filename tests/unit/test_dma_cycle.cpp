@@ -7,6 +7,7 @@ extern "C" {
 }
 #include <cstring>
 #include <gtest/gtest.h>
+
 TEST(CircularDma,
      CountsWrapEventsAndBackpressureWithoutGuessingModuloPosition) {
     uint8_t hardware[4] = {'a', 'b', 'c', 'd'};
@@ -32,6 +33,7 @@ TEST(CircularDma,
     EXPECT_EQ(cycle.consumed, 6U);
     EXPECT_EQ(dma_cycle_drain(&cycle, &ring, 11), XGS_CAPACITY);
 }
+
 TEST(CircularDma, RejectsInvalidObjectsAndDoesNotCompeteWithRxReservation) {
     uint8_t hardware[2] = {1, 2};
     uint8_t software[4]{};

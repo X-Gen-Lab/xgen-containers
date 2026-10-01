@@ -52,6 +52,7 @@ TEST(List, EntryAndTraversalPreserveContainingObjects) {
         int value;
         xgct_list_node_t node;
     } items[3]{};
+
     xgct_list_t list{};
     for (int i = 0; i < 3; ++i) {
         items[i].value = i;

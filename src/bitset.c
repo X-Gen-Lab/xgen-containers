@@ -25,6 +25,7 @@ xgs_status_t xgct_bitset_init(xgct_bitset_t* set, void* storage,
     *set = (xgct_bitset_t){storage, bit_count};
     return XGS_OK;
 }
+
 /* NOLINTEND(bugprone-easily-swappable-parameters,clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)
  */
 
@@ -57,5 +58,6 @@ void xgct_bitset_clear_all(xgct_bitset_t* set) {
         memset(set->storage, 0, xgct_bitset_storage_size(set->bit_count));
     }
 }
+
 /* NOLINTEND(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)
  */

@@ -35,35 +35,41 @@ typedef struct {
  * \param[in,out]   list: Caller-owned list
  */
 void xgct_list_init(xgct_list_t* list);
+
 /**
  * \brief           Initialize an unlinked list node
  * \param[in,out]   node: Caller-owned intrusive node
  */
 void xgct_list_node_init(xgct_list_node_t* node);
+
 /**
  * \brief           Check whether the list contains no nodes
  * \param[in]       list: Caller-owned list
  * \return          true when the condition holds, otherwise false
  */
 bool xgct_list_is_empty(const xgct_list_t* list);
+
 /**
  * \brief           Query the number of linked nodes
  * \param[in]       list: Caller-owned list
  * \return          Calculated or queried value
  */
 size_t xgct_list_count(const xgct_list_t* list);
+
 /**
  * \brief           Insert an unlinked node at the head
  * \param[in,out]   list: Caller-owned list
  * \param[in,out]   node: Caller-owned intrusive node
  */
 void xgct_list_insert_head(xgct_list_t* list, xgct_list_node_t* node);
+
 /**
  * \brief           Insert an unlinked node at the tail
  * \param[in,out]   list: Caller-owned list
  * \param[in,out]   node: Caller-owned intrusive node
  */
 void xgct_list_insert_tail(xgct_list_t* list, xgct_list_node_t* node);
+
 /**
  * \brief           Insert an unlinked node after a member of this list
  * \param[in,out]   list: Caller-owned list
@@ -72,6 +78,7 @@ void xgct_list_insert_tail(xgct_list_t* list, xgct_list_node_t* node);
  */
 void xgct_list_insert_after(xgct_list_t* list, xgct_list_node_t* pos,
                             xgct_list_node_t* node);
+
 /**
  * \brief           Insert an unlinked node before a member of this list
  * \param[in,out]   list: Caller-owned list
@@ -80,42 +87,49 @@ void xgct_list_insert_after(xgct_list_t* list, xgct_list_node_t* pos,
  */
 void xgct_list_insert_before(xgct_list_t* list, xgct_list_node_t* pos,
                              xgct_list_node_t* node);
+
 /**
  * \brief           Detach a node that belongs to this list
  * \param[in,out]   list: Caller-owned list
  * \param[in,out]   node: Caller-owned intrusive node
  */
 void xgct_list_remove(xgct_list_t* list, xgct_list_node_t* node);
+
 /**
  * \brief           Detach the head node
  * \param[in,out]   list: Caller-owned list
  * \return          Matching object, or NULL when absent or unavailable
  */
 xgct_list_node_t* xgct_list_remove_head(xgct_list_t* list);
+
 /**
  * \brief           Detach the tail node
  * \param[in,out]   list: Caller-owned list
  * \return          Matching object, or NULL when absent or unavailable
  */
 xgct_list_node_t* xgct_list_remove_tail(xgct_list_t* list);
+
 /**
  * \brief           Observe the head node without removing it
  * \param[in]       list: Caller-owned list
  * \return          Matching object, or NULL when absent or unavailable
  */
 xgct_list_node_t* xgct_list_peek_head(const xgct_list_t* list);
+
 /**
  * \brief           Observe the tail node without removing it
  * \param[in]       list: Caller-owned list
  * \return          Matching object, or NULL when absent or unavailable
  */
 xgct_list_node_t* xgct_list_peek_tail(const xgct_list_t* list);
+
 /**
  * \brief           Observe the next linked node
  * \param[in]       node: Caller-owned intrusive node
  * \return          Matching object, or NULL when absent or unavailable
  */
 xgct_list_node_t* xgct_list_next(const xgct_list_node_t* node);
+
 /**
  * \brief           Observe the previous linked node
  * \param[in]       node: Caller-owned intrusive node
@@ -129,6 +143,7 @@ xgct_list_node_t* xgct_list_prev(const xgct_list_node_t* node);
  * \note            Work is O(count); every detached node can be reinserted.
  */
 void xgct_list_clear(xgct_list_t* list);
+
 /**
  * \brief           Diagnose links and count with bounded traversal.
  * \param[in]       list: List whose pointer fields refer to live nodes, or
@@ -149,6 +164,7 @@ bool xgct_list_validate(const xgct_list_t* list);
  */
 #define XGCT_LIST_ENTRY(ptr, type, member)                                     \
     ((type*)(void*)((char*)(ptr) - offsetof(type, member)))
+
 /**
  * \brief           Iterate members; structural changes are not permitted.
  * \param[in]       list: Non-NULL initialized list.
@@ -156,6 +172,7 @@ bool xgct_list_validate(const xgct_list_t* list);
  */
 #define XGCT_LIST_FOR_EACH(list, node)                                         \
     for ((node) = (list)->head; (node) != NULL; (node) = (node)->next)
+
 /**
  * \brief           Iterate while allowing removal of the current node only.
  * \param[in]       list: Non-NULL initialized list.
@@ -171,4 +188,5 @@ bool xgct_list_validate(const xgct_list_t* list);
 #ifdef __cplusplus
 }
 #endif
+
 #endif

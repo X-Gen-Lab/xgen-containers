@@ -20,6 +20,7 @@ extern "C" {
 
 /** \brief           Forward declaration for node ownership. */
 typedef struct xgct_hash xgct_hash_t;
+
 /** \brief           Caller-owned index node and borrowed value. */
 typedef struct xgct_hash_node {
     uint32_t key; /**< Unsigned integer lookup key. */
@@ -52,11 +53,13 @@ struct xgct_hash {
  */
 xgs_status_t xgct_hash_init(xgct_hash_t* table, xgct_hash_node_t** buckets,
                             size_t bucket_count, size_t capacity);
+
 /**
  * \brief           Initialize an unlinked caller-owned node
  * \param[in,out]   node: Caller-owned intrusive node
  */
 void xgct_hash_node_init(xgct_hash_node_t* node);
+
 /**
  * \brief           Index an unlinked node without allocating memory
  * \param[in,out]   table: Caller-owned hash index
@@ -68,6 +71,7 @@ void xgct_hash_node_init(xgct_hash_node_t* node);
  */
 xgs_status_t xgct_hash_insert(xgct_hash_t* table, xgct_hash_node_t* node,
                               uint32_t key, void* value);
+
 /**
  * \brief           Find a node by key, including nodes with NULL values
  * \param[in]       table: Caller-owned hash index
@@ -75,6 +79,7 @@ xgs_status_t xgct_hash_insert(xgct_hash_t* table, xgct_hash_node_t* node,
  * \return          Matching object, or NULL when absent or unavailable
  */
 xgct_hash_node_t* xgct_hash_find(const xgct_hash_t* table, uint32_t key);
+
 /**
  * \brief           Detach the node matching a key without freeing its value
  * \param[in,out]   table: Caller-owned hash index
@@ -82,6 +87,7 @@ xgct_hash_node_t* xgct_hash_find(const xgct_hash_t* table, uint32_t key);
  * \return          Matching object, or NULL when absent or unavailable
  */
 xgct_hash_node_t* xgct_hash_remove(xgct_hash_t* table, uint32_t key);
+
 /* Detaches nodes without freeing nodes or values. Retains initialized buckets.
  */
 /**
@@ -89,6 +95,7 @@ xgct_hash_node_t* xgct_hash_remove(xgct_hash_t* table, uint32_t key);
  * \param[in,out]   table: Caller-owned hash index
  */
 void xgct_hash_clear(xgct_hash_t* table);
+
 /**
  * \brief           Query the current number of indexed nodes
  * \param[in]       table: Caller-owned hash index
@@ -107,4 +114,5 @@ bool xgct_hash_validate(const xgct_hash_t* table);
 #ifdef __cplusplus
 }
 #endif
+
 #endif

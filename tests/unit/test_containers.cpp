@@ -48,6 +48,7 @@ TEST(List, ClearDetachesAndDiagnosisDetectsCountLinksAndCycles) {
     EXPECT_EQ(xgct_list_count(&list), 0U);
     xgct_list_clear(nullptr);
 }
+
 TEST(Hash, DiagnosticRejectsCyclesOwnershipAndCount) {
     xgct_hash_t table{};
     xgct_hash_node_t* buckets[1];
@@ -98,6 +99,7 @@ TEST(Bitset, BoundsTailAndBorrowedView) {
     EXPECT_EQ(bytes[0], 0);
     EXPECT_EQ(bytes[3], 99);
 }
+
 TEST(Bitset, InvalidInitializationAndQueriesDoNotModifyObjects) {
     uint8_t bytes[1] = {77};
     xgct_bitset_t set{bytes, 8};
@@ -117,6 +119,7 @@ TEST(Bitset, InvalidInitializationAndQueriesDoNotModifyObjects) {
     EXPECT_FALSE(xgct_bitset_test(&set, 0));
     xgct_bitset_clear_all(&set);
 }
+
 TEST(Ring, DmaRxTxPartialCompletionAndCancellation) {
     uint8_t bytes[8]{};
     xgct_ring_buffer_t ring{};
@@ -159,6 +162,7 @@ TEST(Ring, DmaRxTxPartialCompletionAndCancellation) {
     EXPECT_EQ(xgct_ring_reset(&ring), XGS_OK);
     EXPECT_EQ(xgct_ring_deinit(&ring), XGS_OK);
 }
+
 TEST(Ring, WrapCapacityOneAndCopyReferenceModel) {
     for (size_t capacity : {size_t{1}, size_t{7}, size_t{16}}) {
         std::array<uint8_t, 16> bytes{};
@@ -192,6 +196,7 @@ TEST(Ring, WrapCapacityOneAndCopyReferenceModel) {
         }
     }
 }
+
 TEST(Ring, ClaimsAreContiguousAcrossWrapAndStaleIdsAreRejected) {
     uint8_t bytes[7]{};
     uint8_t output[7]{};
@@ -218,6 +223,7 @@ TEST(Ring, ClaimsAreContiguousAcrossWrapAndStaleIdsAreRejected) {
     EXPECT_GT(span.token, old);
     EXPECT_EQ(xgct_ring_write_cancel(&ring, span.token), XGS_OK);
 }
+
 TEST(Ring, InvalidArgumentsLeaveClaimsAndOutputsUnchanged) {
     xgct_ring_buffer_t ring{};
     uint8_t byte{};
