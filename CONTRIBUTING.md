@@ -23,5 +23,4 @@ clang-tidy 必须使用与分析环境匹配的数据库；不要用未配置 Mi
 
 覆盖率使用 coverage preset，运行测试后调用 `python tools/quality.py coverage --build-dir out/coverage`。
 行、函数、分支各自至少 80%，不取平均。例子实现同样纳入生产分析及覆盖率；测试和依赖代码不计入。
-CI 复用同一工具入口，需要显式配置可读取的 `XGEN_STATUS_REPOSITORY` 和 `XGEN_QUALITY_REPOSITORY`。
-源码固定提交仍在本地时，远端 CI 不视为已具备可运行条件。
+CI 显式从 `X-Gen-Lab/xgen-quality` 获取配置中固定的工具提交，允许用 `XGEN_QUALITY_REPOSITORY` 覆盖为受控镜像。状态组件同样默认从 `X-Gen-Lab/xgen-status` 获取固定提交，可用 `XGEN_STATUS_REPOSITORY` 覆盖。仓库覆盖、固定提交不可获取或安装版本不符时失败；不跟随依赖主分支，远端验证与本地结果分别记录。
